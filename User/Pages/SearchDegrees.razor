@@ -1,0 +1,34 @@
+﻿@page "/Degrees/{insid}"
+@using ClassLibraryDAL
+@using ClassLibraryEntities
+<h3>SearchDegrees</h3>
+@foreach (var emp in @ProgramDegreeDetailsList)
+{
+    <div class="card text-white bg-secondary mb-3" style="max-width: 18rem;">
+        <div class="card-header">Degrees</div>
+        <div class="card-body text-primary">
+
+            <h5 class="card-title text-white">@emp.DegreeName</h5>
+
+        </div>
+    </div>
+}
+
+
+
+
+@code {
+    [Parameter] public string insid { get; set; }
+    private List<EntProgramDegreeDetails>? ProgramDegreeDetailsList { get; set; }
+    private void LaodProgramDegreeDetails()
+    {
+        this.ProgramDegreeDetailsList = DALProgramDegreeDetails.GetProgramDegreeDetailsByInstituteId(insid);
+    }
+    protected async override void OnInitialized()
+    {
+
+        LaodProgramDegreeDetails();
+
+    }
+
+}

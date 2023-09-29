@@ -1,0 +1,50 @@
+﻿@page "/institute/{insid}"
+@using ClassLibraryDAL
+@using ClassLibraryEntities
+<h3>Institute</h3>
+
+
+<div class="container-fluid mt-5">
+    <div class="row">
+
+
+
+
+        @foreach (var emp in instituteList)
+       { if(@emp.CityId==insid){
+            <div class="col-3 mt-4" >
+                <div class="card bg-secondary  text-white" style="width: 18rem;">
+                    <img src="@emp.Logo" class="card-img-top" alt="...">
+                    <div class="card-body">
+
+    <a href="Degrees/@emp.InstituteId" class="btn btn-primary bt-sm">@emp.Title</a>
+
+
+                    </div>
+                </div>
+            </div>
+
+
+        }}
+
+    </div>
+</div>
+
+
+@code {
+private List<EntInstitutes> instituteList;
+ [Parameter] public string insid { get; set; }
+
+    protected override void OnInitialized()
+    {
+        LaodInstitute();
+
+    }
+
+   
+
+    private void LaodInstitute()
+    {
+        this.instituteList = DalInstitutes.GetInstitutes();
+    }
+}

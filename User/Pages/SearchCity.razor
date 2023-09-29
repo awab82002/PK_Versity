@@ -1,0 +1,52 @@
+﻿@page "/searchcity"
+@using ClassLibraryDAL
+@using ClassLibraryEntities
+
+<h3 class="mt-5">SearchCity</h3>
+
+<div class="container-fluid mt-5">
+    <div class="row">
+
+
+
+
+        @foreach (var emp in CitiesList)
+       {
+            <div class="col-3 mt-4" >
+                <div class="card bg-secondary  text-white" style="width: 18rem;">
+                    <img src="Images/Lahore.jpg" class="card-img-top" alt="...">
+                    <div class="card-body">
+
+                        <a href="institute/@emp.CityId" class="btn btn-primary bt-sm">@emp.CityName</a>
+
+                    </div>
+                </div>
+            </div>
+
+
+        }
+
+    </div>
+</div>
+
+
+
+
+
+@code {
+    private List<EntCities> CitiesList;
+    public string? search { get; set; }
+
+
+    protected override void OnInitialized()
+    {
+        LaodCity();
+
+    }
+
+
+    private void LaodCity()
+    {
+        this.CitiesList = DalCities.GetCities();
+    }
+}

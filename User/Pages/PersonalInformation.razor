@@ -1,0 +1,175 @@
+﻿@page "/personalinformation"
+@using ClassLibraryEntities
+@using ClassLibraryDAL
+@inject NavigationManager nm;
+@inject AuthenticationStateProvider authStateProvider
+@attribute [Authorize(Roles = "User")]
+
+<div>
+<EditForm Model="_ModelInfo" OnSubmit="SubmitForm">
+    <h2 class="text-center text-black mt-5">Personal Information</h2>
+
+     
+
+
+    <div class="row mt-4 d-flex justify-content-center align-items-center">
+
+        <div class="col-sm-4">
+            <label>First Name</label>
+            <InputText @bind-Value="_ModelInfo.FirstName" class="form-control" />
+
+        </div>
+    </div>
+    <div class="row d-flex justify-content-center">
+
+
+        <div class="col-sm-4">
+            <label>Father Name</label>
+            <InputText @bind-Value="_ModelInfo.FatherName" class="form-control" />
+
+        </div>
+    </div>
+    <div class="row d-flex justify-content-center">
+
+
+        <div class="col-sm-4">
+            <label>Gender</label>
+            <Select @onchange="_EditGender" class="form-select">
+                <option selected>Select Gender</option>
+                <option value="Male">Male</option>
+                <option value="Female">Female</option>
+
+            </Select>
+
+        </div>
+    </div>
+
+
+    <div class="row d-flex justify-content-center">
+
+
+        <div class="col-sm-4">
+            <label>Student CNIC</label>
+            <InputText @bind-Value="_ModelInfo.CNIC" class="form-control" />
+
+        </div>
+    </div>
+    <div class="row d-flex justify-content-center">
+
+
+        <div class="col-sm-4">
+            <label>Date of Birth</label>
+            <InputText type="date" @bind-Value="_ModelInfo.DateOfBirth" class="form-control" />
+
+        </div>
+
+    </div>
+
+    <div class="row d-flex justify-content-center">
+
+
+        <div class="col-sm-4">
+            <label>City</label>
+            <Select @onchange="_EditCity" class="form-select">
+                <option selected>Select City</option>
+                <option value="Faisalabad">Faisalabad</option>
+                <option value="Multan">Multan</option>
+                <option value="Gujranwala">Gujranwala</option>
+                <option value="Hyderabad">Hyderabad</option>
+                <option value="Peshawar">Peshawar</option>
+                <option value="Quetta">Quetta</option>
+
+
+            </Select>
+
+        </div>
+    </div>
+
+
+
+    <div class="row d-flex justify-content-center">
+
+
+        <div class="col-sm-4">
+            <label>Address</label>
+            <InputText @bind-Value="_ModelInfo.Address" class="form-control" />
+
+        </div>
+    </div>
+
+    <div class="row d-flex justify-content-center">
+
+
+        <div class="col-sm-4">
+            <label>Student Mobile Number</label>
+            <InputText type="tel" @bind-Value="_ModelInfo.StudentMobileNo" class="form-control" />
+
+        </div>
+    </div>
+    <div class="row d-flex justify-content-center">
+
+
+        <div class="col-sm-4">
+            <label>Email</label>
+            <InputText type="email" @bind-Value="_ModelInfo.Email" class="form-control" />
+
+        </div>
+    </div>
+
+
+
+    <div class="text-center">
+        <button type="submit" class="btn btn-primary mr-1">Register</button>
+        <button type="reset" class="btn btn-secondary">Cancel</button>
+    </div>
+</EditForm>
+
+ </div>
+
+
+@code {
+
+
+     private EntStudentInfo? _ModelInfo { get; set; } = new EntStudentInfo();
+    public string? EditCity { get; set; }
+    public string? EditProvince { get; set; }
+    public string? EditGender { get; set; }
+
+    public string? value1 { get; set; }
+    [CascadingParameter]
+    private Task<AuthenticationState> authenticatestate { get; set; }
+
+    private async Task DisplayGreeting()
+    {
+        var authState = await authenticatestate;
+        value1 = $"{authState.User.Identity.Name}";
+
+    }
+
+    protected override void OnInitialized()
+    {
+        DisplayGreeting();
+    }
+
+    private void SubmitForm()
+    {
+        _ModelInfo.SID = value1;
+        _ModelInfo.Gender = EditGender;
+        _ModelInfo.City = EditCity;
+        DALStudentInfo.SaveStudentInfo(_ModelInfo);
+        nm.NavigateTo("/");
+
+    }
+    private void _EditCity(ChangeEventArgs e)
+    {
+        EditCity = e.Value as string;
+    }
+    private void _EditProvince(ChangeEventArgs e)
+    {
+        EditProvince = e.Value as string;
+    }
+    private void _EditGender(ChangeEventArgs e)
+    {
+        EditGender = e.Value as string;
+    }
+}

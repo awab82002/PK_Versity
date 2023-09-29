@@ -1,0 +1,145 @@
+﻿@page "/register"
+@inject IJSRuntime js
+@using ClassLibraryDAL
+@using ClassLibraryEntities
+@using User.Authentication
+
+@inject IJSRuntime js
+@inject AuthenticationStateProvider authStateProvider
+@inject NavigationManager nm
+
+
+
+<section class=" vh-100">
+  <div class="container-fluid h-100 py-5 ">
+    <div class="row d-flex justify-content-center align-items-center h-100">
+
+       @* <div class="col-md-4 align-items-center "*@
+      <div class="col-md-9 col-lg-6 col-xl-5">
+          <h2 class="text-secondary ">PKVersity</h2>
+       <img src="https://mdbcdn.b-cdn.net/img/Photos/new-templates/bootstrap-login-form/draw2.webp" 
+          
+       class="img-fluid" alt="Sample image">
+      </div>
+      <div class="col-md-2 col-lg-3 col-xl-4 offset-xl-1">
+           <h4 class="text-primary pb-3 text-center">Register</h4>
+        <form>
+
+                   <div class="row">
+                <div class="col-md-6 mb-2">
+
+                  <div class="form-outline">
+                    <input @bind="_Model.FirstName" type="text" id="firstName" class="form-control form-control-lg"
+                        placeholder="First Name"/>
+                    <label class="form-label" for="firstName"> </label>
+                  </div>
+
+                </div>
+                <div class="col-md-6 mb-2">
+
+                  <div class="form-outline">
+                    <input type="text" @bind="_Model.LastName" id="lastName" class="form-control form-control-lg" 
+                        placeholder="Last Name"/>
+                    <label class="form-label" for="lastName"> </label>
+                  </div>
+
+                </div>
+                 <div class="form-outline py-1">
+                    <input type="email" @bind="_Model.Email" id="emailAddress" class="form-control form-control-lg"
+                        placeholder="Enter a valid Email Address" />
+                    <label class="form-label" for="emailAddress"> </label>
+                  </div>
+
+                  <div class="form-outline">
+                    <input type="password" @bind="Password" id="regpassword" class="form-control form-control-lg"
+                        placeholder="Enter Password" />
+                    <label class="form-label" for="regpassword"> </label>
+                  </div>
+
+                  <div class="form-outline">
+                    <input type="tel" @bind="_Model.ContactNo" id="phoneNumber" class="form-control form-control-lg" 
+                        placeholder="Enter Contact Number"/>
+                    <label class="form-label" for="phoneNumber"> </label>
+                  </div>
+
+              </div>
+
+              <div class="row">
+                <div class="col-md-6 mb-4 d-flex align-items-center">
+                  <div class="form-outline datepicker w-100">
+                    <input type="text" @bind="_Model.City" class="form-control form-control-lg" id="birthdayDate" 
+                        placeholder="Enter City"/>
+                    <label for="birthdayDate" class="form-label"></label>
+                  </div>
+                </div>
+
+             
+                  <div class="col form-check form-check-inline mt-2">
+                    <input class="form-check-input" type="radio" name="inlineRadioOptions" id="femaleGender"
+                      value="option1"  @onchange="@(() => _Gender("Female"))"/>
+                    <label class="form-check-label text-dark " for="femaleGender">Female</label>
+                  </div>
+
+                  <div class=" col form-check form-check-inline mt-2">
+                    <input class="form-check-input" type="radio" name="inlineRadioOptions" id="maleGender"
+                      value="option2" @onchange="@(() => _Gender("Male"))"/>
+                    <label class="form-check-label text-dark" for="maleGender">Male</label>
+                  </div>
+
+                </div>
+
+
+                    <div class="text-center  mt-4 pt-2">
+                        <button type="button" class="btn btn-primary btn-lg"
+                                style="padding-left: 12rem; padding-right: 12rem;" @onclick="SignUp">
+                            Register
+                        </button>
+                        <p class="small fw-bold mt-2 pt-1 mb-0">
+                            If already have an account? <a href="login"
+                                                      class="link-danger">Login</a>
+                        </p>
+                      
+                    </div>
+
+                </form>
+      </div>
+    </div>
+  </div>
+</section>
+@code {
+    public string? EncPass { get; set; }
+    public string? Password { get; set; }
+    public string? Gender { get; set; }
+    private ClassLibraryEntities.EntUserlogin _Model { get; set; } = new ClassLibraryEntities.EntUserlogin();
+
+
+    public static string EncodePasswordToBase64(string password)
+    {
+        try
+        {
+            byte[] encData_byte = new byte[password.Length];
+            encData_byte = System.Text.Encoding.UTF8.GetBytes(password);
+            string encodedData = Convert.ToBase64String(encData_byte);
+            return encodedData;
+        }
+        catch (Exception ex)
+        {
+            throw new Exception("Error in base64Encode" + ex.Message);
+        }
+    }
+
+    private void SignUp()
+    {
+        EncPass = EncodePasswordToBase64(Password); 
+        _Model.Password = EncPass;
+        _Model.Gender = Gender;
+        _Model.Role = "User";
+        DALUserLogin.SaveSignUp(_Model);
+        nm.NavigateTo("/login");
+    }
+
+    public void _Gender(string gender)
+    {
+        Gender = gender;
+    }
+}

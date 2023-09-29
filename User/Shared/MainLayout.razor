@@ -1,0 +1,90 @@
+﻿@using User.Authentication
+@inherits LayoutComponentBase
+@inject AuthenticationStateProvider authStateProvider
+@inject NavigationManager nm
+
+
+<PageTitle>FrontPage</PageTitle>
+<style>
+    .img-height{
+        height:2rem;
+        margin-bottom:1rem;
+    }
+</style>
+
+
+    <main>
+
+        <nav class="navbar navbar-expand-lg sticky-top navbar-light bg-light">
+  <div class="container-fluid position-relative">
+     <a href="/" class="navbar-brand ml-lg-3">
+               <img src="Images/pkversitylogo.png"class="img-height" />
+            </a>
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+           <AuthorizeView Roles="User">
+            <Authorized>
+        <li class="nav-item">
+          <a class="nav-link active" aria-current="page" href="/">Home</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="personalinformation">Personal Info</a>
+        </li>  
+        <li class="nav-item">
+          <a class="nav-link" href="form">Academic Info</a>
+        </li>
+        @*<li class="nav-item">
+          <a class="nav-link " aria-current="page" href="/searchcity">Search City</a>
+        </li>*@
+        </Authorized>
+
+        </AuthorizeView>
+         </ul>
+        <AuthorizeView>
+                        <Authorized>
+ <a  @onclick="logout" href="javascript:void(0)" class="btn btn-primary">Logout</a>
+       
+        
+        </Authorized>
+                          <NotAuthorized>
+        <form class="form-inline my-2 my-lg-0">
+       
+        <a href="login" class="btn btn-primary" >Login</a>
+        <a href="register" class="btn btn-primary" >Register</a>
+      </form>
+                             
+ </NotAuthorized>
+                    </AuthorizeView>
+     
+     
+    </div>
+  </div>
+</nav>
+
+
+<div>
+            @Body
+     </div> 
+    </main>
+
+
+
+
+
+
+
+
+@code{
+
+        private async Task logout ()
+    {
+        var customAuthStateProvider = (CustomAuthenticationStateProvider)authStateProvider;
+        await customAuthStateProvider.UpdateAuthenticationState(null);
+        nm.NavigateTo("/", true);
+    }
+}
+}
+                           

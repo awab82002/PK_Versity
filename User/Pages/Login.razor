@@ -1,0 +1,148 @@
+﻿@page "/login"
+
+@inject IJSRuntime js
+@using ClassLibraryDAL
+@using ClassLibraryEntities
+@using User.Authentication
+
+@inject IJSRuntime js
+@inject AuthenticationStateProvider authStateProvider
+@inject NavigationManager nm
+
+
+
+
+
+<section class=" vh-100">
+  <div class="container-fluid h-100 py-5 ">
+    <div class="row d-flex justify-content-center align-items-center h-100">
+
+       @* <div class="col-md-4 align-items-center "*@
+      <div class="col-md-9 col-lg-6 col-xl-5">
+          <h2 class="text-secondary ">PKVersity</h2>
+       <img src="https://mdbcdn.b-cdn.net/img/Photos/new-templates/bootstrap-login-form/draw2.webp" 
+          
+       class="img-fluid" alt="Sample image">
+      </div>
+      <div class="col-md-2 col-lg-3 col-xl-4 offset-xl-1">
+           <h4 class="text-primary pb-3 text-center">Login</h4>
+<form>
+
+                    <!-- Email input -->
+                    <div class="form-outline mb-4">
+                        <input type="email" id="form3Example3" @bind="Email" class="form-control form-control-lg"
+                               placeholder="Enter the valid email" />
+                        <label class="form-label" for="form3Example3"> </label>
+                    </div>
+
+                    <!-- Password input -->
+                    <div class="form-outline mb-3">
+                        <input type="password" @bind="Password" id="form3Example4" class="form-control form-control-lg"
+                               placeholder="Enter password" />
+                        <label class="form-label" for="form3Example4"> </label>
+                    </div>
+
+                    <div class="d-flex justify-content-between align-items-center">
+                        <!-- Checkbox -->
+                        <div class="form-check mb-0">
+                            <input class="form-check-input me-2" type="checkbox" value="" id="form2Example3" />
+                            <label class="form-check-label" for="form2Example3">
+                                Remember me
+                            </label>
+
+                        </div>
+                        <a href="#!" class="text-body">Forgot password?</a>
+                    </div>
+
+                    <div class="text-center  mt-4 pt-2">
+                        <button type="button" class="btn btn-primary btn-lg"
+                                style="padding-left: 12rem; padding-right: 12rem;" @onclick="Authenticate">
+                            Login
+                        </button>
+                        <p class="small fw-bold mt-2 pt-1 mb-0">
+                            Don't have an account? <a href="register"
+                                                      class="link-danger">Register</a>
+                        </p>
+                        @if (check)
+                        {
+                            <h6 class="text-danger text-center">@message </h6>
+                        }
+                    </div>
+
+                </form>      
+      </div>
+    </div>
+  </div>
+</section>
+
+
+
+@code {
+
+
+
+
+    private ClassLibraryEntities.EntUserlogin _Model { get; set; } = new ClassLibraryEntities.EntUserlogin();
+
+    public string? Email { get; set; }
+    public string? Password { get; set; }
+    public string? ID { get; set; }
+    public string? Passwrd { get; set; }
+    public string? EncPass { get; set; }
+    public string? message { get; set; }
+    bool check = false;
+
+    public string DecodeFrom64(string encodedData)
+    {
+        System.Text.UTF8Encoding encoder = new System.Text.UTF8Encoding();
+        System.Text.Decoder utf8Decode = encoder.GetDecoder();
+        byte[] todecode_byte = Convert.FromBase64String(encodedData);
+        int charCount = utf8Decode.GetCharCount(todecode_byte, 0, todecode_byte.Length);
+        char[] decoded_char = new char[charCount];
+        utf8Decode.GetChars(todecode_byte, 0, todecode_byte.Length, decoded_char, 0);
+        string result = new String(decoded_char);
+        return result;
+    }
+
+
+    private async Task Authenticate()
+    {
+
+        _Model = DALUserLogin.GetUserByName(Email);
+        _Model.Email = Email;  //
+        ID = _Model.UserId;
+        Passwrd = DecodeFrom64(_Model.Password);
+
+
+
+        if (_Model == null || Passwrd != Password)
+        {
+
+            check = true;
+            message = "Invalid UserName and Password ! ";
+
+        }
+        else
+        {
+
+            var customAuthStateProvider = (CustomAuthenticationStateProvider)authStateProvider;
+            await customAuthStateProvider.UpdateAuthenticationState(new UserSession
+                {
+                    UserId = _Model.UserId,
+                    UserName = _Model.Email,
+                    Role = _Model.Role
+
+                });
+
+            nm.NavigateTo("/", true);
+        }
+
+    }
+
+
+
+
+
+
+
+}

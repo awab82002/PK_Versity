@@ -1,0 +1,45 @@
+@page "/alpha"
+
+@using MVCAuthentication.Authentication
+@inject UserAccountService userAccountService
+@inject IJSRuntime js 
+@inject AuthenticationStateProvider authStateProvider
+@inject NavigationManager nm
+<h3>login</h3>
+
+<div>
+    <input @bind="_Model.UserName " placeholder="userName"  />
+     <input @bind="_Model.Password " placeholder="Password"  />
+     <button onclick="Authenticate" class="btn btn-primary" >Login</button>
+</div>
+
+@code {
+
+    private class _Model
+    {
+        public String UserName { get; set; }
+        public string Password { get; set; }
+    }
+
+    private _Model model = new _Model();
+
+    private async Task Authenticate ()
+    {
+        var userAccount = userAccountService.GetByUserName(model.UserName);
+        if(userAccount == null || userAccount.Password != model.Password)
+        {
+            await js.InvokeVoidAsync("alert", "Invalid userName");
+            return;
+        }
+
+        var customAuthStateProvider = (CustomAuthenticationStateProvider)authStateProvider;
+        await customAuthStateProvider.UpdateAuthenticationState(new UserSession
+            {
+                UserName = userAccount.UserName,
+                Role = userAccount.Role
+
+            });
+
+        nm.NavigateTo("/", true); 
+    }
+}

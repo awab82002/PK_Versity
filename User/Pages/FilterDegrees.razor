@@ -1,0 +1,48 @@
+﻿@page "/fdegrees/{intid}"
+@using ClassLibraryDAL
+@using ClassLibraryEntities
+<h3>SearchDegrees</h3>
+@foreach (var emp in @ProgramDegreeDetailsList)
+{
+    @if (emp.ProgramDegreeId == my )
+    {
+        <div class="card text-white bg-secondary mb-3" style="max-width: 18rem;">
+            <div class="card-header">Degrees</div>
+            <div class="card-body text-primary">
+
+                <h5 class="card-title text-white">@emp.DegreeName</h5>
+
+            </div>
+        </div>
+    }
+}
+
+
+
+
+@code {
+    [Parameter] public string intid { get; set; }
+    private List<EntProgramDegreeDetails>? ProgramDegreeDetailsList { get; set; }
+    private List<EntFilter> FilterCities;
+    public string? my { get; set; }
+    private void LaodProgramDegreeDetails()
+    {
+        this.ProgramDegreeDetailsList = DALProgramDegreeDetails.GetProgramDegreeByInstituteId(intid);
+        FilterCities = DalFilter.GetResultByid(intid);
+    }
+    protected override void OnInitialized()
+    {
+
+        LaodProgramDegreeDetails();
+
+    }
+
+
+    public void getdata()
+    {
+        foreach (var emp in FilterCities)
+        {
+            my = emp.ProgramDegreeId;
+        }
+    }
+}

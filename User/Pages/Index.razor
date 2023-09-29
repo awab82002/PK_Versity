@@ -1,0 +1,197 @@
+﻿@page "/"
+@using ClassLibraryDAL
+@using ClassLibraryEntities
+@inject IJSRuntime js
+
+
+<style>
+    .color-d{
+        background-color:#1a1a97c4;
+    }
+</style>
+ <div class="color-d">
+        <div class="text-center py-5">
+            <h1 class="text-white mt-4 mb-4">Learn From Home</h1>
+            <h1 class="text-white display-1 mb-5">Education Courses</h1>
+            <div class="mx-auto mb-5" >
+                
+                
+
+
+       <div class="row">
+        <div class="col-md-10 offset-md-3">
+            <div class="input-group ">
+
+
+              
+                    <div class="dropdown bootstrap-select">
+                        <select class="form-select text-black" @onchange="_DegOption" required>
+                            <option value="-1" selected>Select Category</option>
+
+                            @foreach (var emp in @PassingDegreeList)
+                            {
+                                <option value="@emp.PassingDegreesId">@emp.Title</option>
+                            }
+                        </select>
+                    </div>
+            
+          
+                    <div class="dropdown bootstrap-select">
+                        <select @bind="@PassingDegreeSGid" class="form-select text-black" aria-label="Default select example">
+                            <option value="-1" selected>Select Category</option>
+
+                            @foreach (var emp in @PassingDSGroupsList)
+                            {
+                                if (alpha == emp.PassingDegreeId)
+                                {
+                                    <option value="@emp.PassingDSGroupsId">@emp.PassingDSGroups</option>
+                                }
+                            }
+                        </select>
+                    </div>
+          
+                    <div class="dropdown bootstrap-select">
+                        <select @bind="@perc" class="form-select text-black" aria-label="Default select example" required>
+                            <option value="-1" selected>Select Percentage</option>
+                            <option value="50">50 </option>
+                            <option value="60">60</option>
+
+
+                        </select>
+                    </div>
+              
+          
+                    <div class="dropdown bootstrap-select">
+                        <select @bind="cityID" class="form-select " aria-label="Default select example" required>
+                            <option value="-1">Select City</option>
+
+                            @foreach (var emp in @CitiesList)
+                            {
+
+                                <option value="@emp.CityId">@emp.CityName</option>
+
+                            }
+                        </select>
+                    </div>
+            
+                    <button type="submit" class="btn btn-outline-success text-white" @onclick="Submit">Search</button>
+              
+        
+       </div>
+  
+</div>                                  
+                
+            </div>
+        </div>
+    </div>
+
+    </div>
+
+
+@if (check)
+{
+
+
+    <div class="container-fluid mt-5">
+        <div class="row">
+            @foreach (var emp in FilterCitiesList)
+            {
+                <div class="col-md-3     mt-4">
+                    <div class="card text-dark bg-light shadow mb-3" style="max-width: 18rem;">
+
+                        <div class="card-body">
+                            <div class="h4">@emp.Title</div>
+                            <h6 class="card-subtitle mb-2">You are eligible in <b>@emp.Departments </b> Departments</h6>
+
+                            <button class="btn btn-primary mt-2" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasRight" aria-controls="offcanvasRight" @onclick="e=>DepartmentsDetails(emp.InstituteId)">View Details</button>
+
+                        </div>
+                    </div>
+                </div>
+
+            }
+
+        </div>
+    </div>
+}
+
+<div class="offcanvas offcanvas-end w-100 canvas-color" tabindex="-1" id="offcanvasRight" aria-labelledby="offcanvasRightLabel">
+    <div class="offcanvas-header">
+        <h5 id="offcanvasRightLabel">Eligible Departments</h5>
+        <button type="button" class="btn-close text-reset " style="Color:White;" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+    </div>
+    <div class="offcanvas-body">
+        @if (check1)
+        {
+            <ViewDetails FilterDepartmentList="FilterDepartmentList"></ViewDetails>
+
+        }
+
+    </div>
+</div>
+
+@if (checck)
+{
+    <MessageComponent CustomMessage="@Message"></MessageComponent>
+}
+
+
+@code {
+
+    private List<EntPassingDegree>? PassingDegreeList;
+    private List<EntPassingDSGroups>? PassingDSGroupsList;
+    private List<EntCities>? CitiesList;
+    private List<EntFilter> FilterCitiesList;
+    private List<EntProgramDegreeDetails>? FilterDepartmentList { get; set; }
+
+    public string? alpha { get; set; }
+    private string? PassingDegreeSGid { get; set; }
+    public string? cityID { get; set; }
+    public bool check = false;
+    public bool check1 = false;
+    public bool checck = false;
+    public string? perc { get; set; }
+    public string? Message { get; set; }
+
+
+    private EntFilter? _ModelFilter { get; set; } = new EntFilter();
+    private void LoadProgramDetails()
+    {
+        this.PassingDegreeList = DALPassingDegree.GetPassingDegrees();
+        this.PassingDSGroupsList = DALPassingDSGroups.GetPassingDSGroups();
+        this.CitiesList = DalCities.GetCities();
+    }
+    protected async override void OnInitialized()
+    {
+        LoadProgramDetails();
+    }
+    private void _DegOption(ChangeEventArgs e)
+    {
+        alpha = e.Value as string;
+
+    }
+    private void Submit()
+    {
+        if (PassingDegreeSGid != "-1" && !string.IsNullOrEmpty(PassingDegreeSGid as string) || cityID != "-1" && !string.IsNullOrEmpty(cityID as string) || perc != "-1" && !string.IsNullOrEmpty(perc as string))
+        {
+            FilterCitiesList = DalFilter.GetDepartmentsbyID(PassingDegreeSGid, cityID, perc);
+            check = true;
+        }
+        else
+        {
+            Alert();
+
+        }
+
+    }
+    private async Task Alert()
+    {
+        await js.InvokeVoidAsync("alert", "Please select all values");
+    }
+    private void DepartmentsDetails(string iid)
+    {
+
+        FilterDepartmentList = DalFilter.GetDepartmentDetailsbyID(PassingDegreeSGid, iid);
+        check1 = true;
+    }
+}

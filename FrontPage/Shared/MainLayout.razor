@@ -1,0 +1,28 @@
+﻿@inherits LayoutComponentBase
+
+<PageTitle>FrontPage</PageTitle>
+
+<div class="navbar">
+
+    <main>
+        <div class="">
+            <nav class="navbar navbar-dark">
+
+
+
+                <div class="container-fluid mx-5">
+                    <a class="navbar-brand px-3">Academia</a>
+                    <form class="d-flex">
+                        <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search">
+                        <a href="login" class="btn btn-outline-success" >Login</a>
+                        <button class="btn btn-outline-success" type="submit">SignUp</button>
+                    </form>
+                </div>
+            </nav>
+        </div>
+
+        <article class="content px-4">
+            @Body
+        </article>
+    </main>
+</div>

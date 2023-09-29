@@ -1,0 +1,74 @@
+﻿@page "/fcities/{id}"
+@using ClassLibraryDAL
+@using ClassLibraryEntities
+
+<h3 class="mt-5">SearchCity</h3>
+
+<div class="container-fluid mt-5">
+    <div class="row">
+
+
+
+
+        @foreach (var emp in CitiesList)
+        {
+            @if (emp.CityId == my)
+            {
+
+                <div class="col-3 mt-4">
+                    <div class="card bg-secondary  text-white" style="width: 18rem;">
+                        <img src="Images/Lahore.jpg" class="card-img-top" alt="...">
+                        <div class="card-body">
+
+                            <a href="finstitute/@emp.CityId" class="btn btn-primary bt-sm">@emp.CityName</a>
+
+                        </div>
+                    </div>
+                </div>
+
+            }
+
+
+
+        }
+
+    </div>
+</div>
+
+
+
+
+
+@code {
+    private List<EntCities> CitiesList;
+    private List<EntFilter> FilterCities;
+    public string? search { get; set; }
+    [Parameter] public string? id { get; set; }
+    public string? my { get; set; }
+
+
+
+    protected override void OnInitialized()
+    {
+        LaodCity();
+        getdata();
+
+    }
+
+
+    private void LaodCity()
+    {
+        this.CitiesList = DalCities.GetCities();
+        FilterCities = DalFilter.GetResultByid(id);
+
+    }
+
+
+    public void getdata()
+    {
+        foreach (var emp in FilterCities)
+        {
+            my = emp.CityId;
+        }
+    }
+}

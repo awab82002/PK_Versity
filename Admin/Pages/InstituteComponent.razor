@@ -1,0 +1,284 @@
+﻿@page "/institute/{insid}"
+@using ClassLibraryDAL
+@using ClassLibraryEntities
+
+
+@inject NavigationManager nm;
+
+
+<h3>@title</h3>
+
+<h3>Institute Component</h3>
+
+
+
+
+@if (check)
+{
+    <MessageComponent CustomMessage="@message"></MessageComponent>
+}
+<a class="btn btn-primary" href="/institutes" role="button">Go Back</a>
+
+<EditForm Model="_ModelInstitute" OnSubmit="SubmitForm">
+    <table>
+        <tr>
+            <td>
+                InstituteId
+            </td>
+            <td>
+                <InputText name="ID" @bind-Value="_ModelInstitute.InstituteId" Disabled></InputText>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                Title
+            </td>
+            <td>
+                <InputText name="ID" @bind-Value="_ModelInstitute.Title" required></InputText>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                Email
+            </td>
+            <td>
+                <InputText name="Email" @bind-Value="_ModelInstitute.Email" required></InputText>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                Phone
+            </td>
+            <td>
+                <InputText name="Phone" @bind-Value="_ModelInstitute.Phone" required></InputText>
+            </td>
+        </tr>
+         <tr>
+            <td>
+                Logo
+            </td>
+            <td>
+                <InputText name="Logo" @bind-Value="_ModelInstitute.Logo" required></InputText>
+            </td>
+        </tr>
+
+          <tr>
+            <td>
+                UserName
+            </td>
+            <td>
+                <InputText type="text" name="UserName" @bind-Value="_ModelInstitute.UserName" required></InputText>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                Password
+            </td>
+            <td>
+                <InputText type="password" name="Password" @bind-Value="_ModelInstitute.Password" required></InputText>
+            </td>
+        </tr>
+
+
+        <tr>
+            <td>
+                CityId
+            </td>
+            <td>
+                <select class="form-select" aria-label="Default select example" @onchange="_InstEdit">
+                    <option ID="DropDown">---Select City---</option>
+                    @foreach (var emp in CitiesList)
+
+                    {
+
+                        <option value="@emp.CityId">@emp.CityName</option>
+
+                    }
+                </select>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                TypeOfId
+            </td>
+            <td>
+                <select class="form-select" aria-label="Default select example" @onchange="_TypeEdit">
+
+                    <option value="0">--Select Type---</option>
+                    @foreach (var emp in TypesList)
+                    {
+
+                        <option value="@emp.TypeOfId">@emp.Type</option>
+
+                    }
+                </select>
+
+            </td>
+        </tr>
+        <tr>
+            <td>
+                Location
+            </td>
+            <td>
+                <InputText name="Location" @bind-Value="_ModelInstitute.Location" required></InputText>
+            </td>
+        </tr>
+
+
+
+        <tr>
+            <td>
+            </td>
+            <td>
+                <button type="submit" class="btn btn-primary">@title</button>
+            </td>
+        </tr>
+    </table>
+
+
+</EditForm>
+
+@code {
+
+    private EntInstitutes _ModelInstitute { get; set; }
+    private List<EntInstitutes> instituteList;
+    private List<EntCities> CitiesList;
+    private List<EntTypes> TypesList;
+    private string? title { get; set; }
+    private string? InstEdit { get; set; }
+    private string? TypeEdit { get; set; }
+
+    [Parameter] public string insid { get; set; }
+
+    private int i { get; set; }
+    bool check = false;
+    private string? message { get; set; }
+    private string? EncPassword { get; set; }
+
+
+    public static string EncodePasswordToBase64(string password)
+    {
+        
+            byte[] encData_byte = new byte[password.Length];
+            encData_byte = System.Text.Encoding.UTF8.GetBytes(password);
+            string encodedData = Convert.ToBase64String(encData_byte);
+            return encodedData;
+        
+   
+    }
+
+
+    protected override void OnInitialized()
+    {
+        if (insid == "0")
+        {
+            _ModelInstitute = new EntInstitutes();
+            title = " New Institute";
+        }
+        else
+        {
+            _ModelInstitute = DalInstitutes.GetInstituteBtId(insid);
+            title = "Update Institute";
+        }
+
+        this.CitiesList = DalCities.GetCities();
+        this.TypesList = DalTypes.GetTypeOfs();
+    }
+
+    private void SubmitForm()
+    {
+        if (insid == "0")
+        {
+            if (IfExist(_ModelInstitute.Title, _ModelInstitute.Email, _ModelInstitute.Phone, _ModelInstitute.Location) == 0)
+            {
+
+
+
+                if (TypeEdit != "0" && InstEdit != "0" && TypeEdit != null && InstEdit != null)
+                {
+                    EncPassword = EncodePasswordToBase64(_ModelInstitute.Password);
+                    _ModelInstitute.Password = EncPassword;
+                    _ModelInstitute.CityId = InstEdit;
+                    _ModelInstitute.TypeOfId = TypeEdit;
+                    
+                    DalInstitutes.SaveInstitutes(_ModelInstitute);
+                    nm.NavigateTo("/institutes");
+                }
+                else
+                {
+                    check = true;
+                    message = "Select city and typeid";
+                }
+            }
+            else
+
+            {
+                check = true;
+                message = "Alread exist";
+            }
+        }
+        else
+        {
+           //if (IfExist(_ModelInstitute.Title, _ModelInstitute.Email, _ModelInstitute.Phone, _ModelInstitute.Location) == 0)
+           // {
+
+
+                if (TypeEdit != "0" && InstEdit != "0" && TypeEdit != null && InstEdit != null)
+                {
+
+                    _ModelInstitute.CityId = InstEdit;
+                    _ModelInstitute.TypeOfId = TypeEdit;
+                    DalInstitutes.UpdateInstitutes(_ModelInstitute);
+                    nm.NavigateTo("/institutes");
+                }
+                else
+                {
+                    check = true;
+                    message = "Select city and typeid";
+                }
+
+          //  }
+          //  else
+          //  {
+          //      check = true;
+          //      message = "Alread exist";
+           // }
+        }
+
+    }
+
+    private int IfExist(string title, string email, string phone, string location)
+    {
+        instituteList = DalInstitutes.GetInstitutes();
+
+        foreach (var emp in instituteList)
+        {
+            if (emp.Title == title || emp.Email == email || emp.Phone == phone || emp.Location == location)
+            {
+                i = 1;
+            }
+            else
+            {
+                i = 0;
+            }
+
+        }
+        return i;
+    }
+
+    private void _InstEdit(ChangeEventArgs e)
+    {
+        InstEdit = e.Value as string;
+    }
+
+    private void _TypeEdit(ChangeEventArgs e)
+    {
+        TypeEdit = e.Value as string;
+    }
+}
+
+
+
+
+
+

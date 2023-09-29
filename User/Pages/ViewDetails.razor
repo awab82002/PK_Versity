@@ -1,0 +1,107 @@
+﻿@using ClassLibraryDAL
+@using ClassLibraryEntities
+
+@*d-flex justify-content-center align-items-center*@
+
+<style>
+    .card {
+        border-left: 4px solid blue;
+    }
+
+    .text-primary {
+        font-weight: 600;
+    }
+</style>
+<div class="container">
+
+    <div class="row">
+
+        @foreach (var emp in @FilterDepartmentList)
+        {
+            <div class="col-md-10 mb-4">
+                <div class="card text-dark bg-light shadow-sm ">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between mb-5">
+                            <div>
+                                <h3 class="fw-bold ">@emp.DegreeName</h3>
+                            </div>
+                            <div>
+                                <button class="btn btn-primary " @onclick="e=>OpenDeleteDialog(emp.ProgramDegreeId)">Future Scope</button>
+
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-3">
+                                <div class="card p-2">
+                                    <div class="d-flex justify-content-between">
+                                        <span>Duration</span><span class="text-primary">@emp.Duration </span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="card p-2">
+                                    <div class="d-flex justify-content-between">
+                                        <span>TotalSem  </span><span class="text-primary">@emp.TotalSemesters</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="card p-2">
+                                    <div class="d-flex justify-content-between">
+                                        <span>Total Fee  </span><span class="text-primary">@emp.TotalFee</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="card p-2">
+                                    <div class="d-flex justify-content-between">
+                                        <span>Semester Fee  </span><span class="text-primary">@emp.SemesterFee</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-3 mt-4">
+                                <div class="card p-2">
+                                    <div class="d-flex justify-content-between">
+                                        <span>Closing Merit  </span><span class="text-primary">@emp.ClosingMerit</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        }
+    </div>
+</div>
+
+@if (DeleteDialogOpen)
+{
+    <FutureScope ID="@ID" OnClose="@OnDeleteDialogClose"></FutureScope>
+}
+
+
+@code {
+    public bool DeleteDialogOpen { get; set; }
+    private void OnDeleteDialogClose(bool accepted)
+    {
+        DeleteDialogOpen = false;
+        StateHasChanged();
+    }
+    private void OpenDeleteDialog(string Id)
+    {
+        DeleteDialogOpen = true;
+        ID = Id;
+        StateHasChanged();
+    }
+
+    public string? ID { get; set; }
+    public bool check { get; set; } = false;
+    [Parameter] public string? insid { get; set; }
+    [Parameter] public string? PDSGID { get; set; }
+    [Parameter]
+    public List<EntProgramDegreeDetails>? FilterDepartmentList { get; set; }
+    public List<EntFutureScope>? FutureScopeList { get; set; }
+
+
+}

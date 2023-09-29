@@ -1,0 +1,85 @@
+﻿@using ClassLibraryDAL
+@using ClassLibraryEntities
+
+<style>
+    .modal {
+
+    --bs-modal-width: 80% !important;
+   
+}
+</style>
+
+
+<div class="modal fade show" id="myModal" style="display:block; background-color: rgba(10,10,10,.8); " aria-modal="true" role="dialog">
+    <div class="modal-dialog">
+        <div class="modal-content" >
+            <div class="modal-header">
+                <h4 class="modal-title">FUTURE SCOPE</h4>
+                <button type="button" class="close" @onclick="@ModelCancel">&times;</button>
+            </div>
+            <div class="modal-body" >
+
+                <div class="container-fluid">
+
+                    @foreach (var emp in FutureScopeList)
+                    {
+
+                        <div class="card text-dark bg-light">
+                            <div class="card-body">
+                                @((MarkupString)emp.Description)
+
+                            </div>
+                        </div>
+
+
+
+                    }
+
+                </div>
+
+
+
+
+
+
+            </div>
+
+
+        </div>
+    </div>
+</div>
+
+
+@code {
+
+
+
+    [Parameter]
+    public bool check { get; set; }
+    [Parameter]
+    public string ID { get; set; }
+    [Parameter]
+    public Action FunSco { get; set; }
+    [Parameter]
+    public EventCallback<bool> OnClose { get; set; }
+    public List<EntFutureScope>? FutureScopeList { get; set; }
+
+    private Task ModelCancel()
+    {
+        return OnClose.InvokeAsync(false);
+    }
+    private Task ModalOk()
+    {
+        return OnClose.InvokeAsync(true);
+    }
+
+
+    protected async override void OnInitialized()
+    {
+        FutureScopeList = DALFutureScope.GetFutureScopeById(ID);
+
+    }
+
+
+
+}

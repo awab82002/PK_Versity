@@ -1,0 +1,392 @@
+﻿@page "/form"
+@using ClassLibraryDAL
+@using ClassLibraryEntities
+@inject AuthenticationStateProvider authStateProvider
+@attribute [Authorize(Roles = "User")]
+
+
+<div>
+    <EditForm Model="_ModelInfo" OnSubmit="SubmitForm">
+        <h2 class="text-center mt-5 text-black">Educational Information</h2>
+        <div class="row mt-4 d-flex justify-content-center align-items-center">
+
+            <div class="col-sm-5">
+                <label>Degree</label>
+                <select class="form-select" aria-label="Default select example" @onchange="_DegreeOption">
+                    <option selected>Select Degree</option>
+
+                    @foreach (var reh in @PassingDegreeList)
+                    {
+                        <option value="@reh.PassingDegreesId">@reh.Title</option>
+                    }
+                </select>
+
+            </div>
+
+
+        </div>
+        <div class="row d-flex justify-content-center">
+
+
+            <div class="col-sm-5">
+                <label>Degree Groups</label>
+                <select class="form-select" aria-label="Default select example" @onchange="_PGSGOption">
+                    <option selected>Select Degree Group </option>
+
+                    @foreach (var emp in @PassingDSGroupsList)
+                    {
+                        @if (degree == emp.PassingDegreeId)
+                        {
+                            <option value="@emp.PassingDSGroups">@emp.PassingDSGroups</option>
+                        }
+
+                    }
+                </select>
+
+            </div>
+
+        </div>
+        <div class="row d-flex justify-content-center">
+
+
+            <div class="col-sm-5">
+                <label>Board/University</label>
+                <Select @onchange="_EditBU" class="form-select ">
+                    <option selected>Select Board</option>
+                    <option value="Rwp">Rawalpindi</option>
+                    <option value="Isl">Islamabad</option>
+
+                </Select>
+
+            </div>
+        </div>
+
+
+        <div class="row d-flex justify-content-center">
+
+
+            <div class="col-sm-5">
+                <label> Obtained Marks </label>
+                <InputText @bind-Value="_ModelInfo.ObtainedMarks" class="form-control" />
+
+            </div>
+        </div>
+        <div class="row d-flex justify-content-center">
+
+
+            <div class="col-sm-5">
+                <label>Total Marks</label>
+                <InputText @bind-Value="_ModelInfo.TotalMarks" class="form-control" />
+
+            </div>
+
+        </div>
+
+        <div class="row d-flex justify-content-center">
+
+
+            <div class="col-sm-5">
+                <label>Percentage</label>
+                <InputText @bind-Value="_ModelInfo.Percentage"   class="form-control"/>
+
+
+            </div>
+        </div>
+
+
+
+        <div class="row d-flex justify-content-center">
+
+
+            <div class="col-sm-5">
+                <label>Passing Year</label>
+                <InputText @bind-Value="_ModelInfo.PassingYear" class="form-control" />
+
+            </div>
+        </div>
+
+        <div class="row d-flex justify-content-center">
+
+
+            <div class="col-sm-5">
+                <label>Institute</label>
+                <InputText type="text" @bind-Value="_ModelInfo.Institute" class="form-control" />
+
+            </div>
+        </div>
+
+
+
+        <div class="text-center ">
+            <button type="submit" class="btn btn-primary " id="btn-register">Register</button>
+            <button type="reset" class="btn btn-secondary">Cancel</button>
+        </div>
+    </EditForm>
+
+</div>
+
+<style>
+    .card {
+        border-left: 4px solid blue;
+    }
+
+    .text-primary {
+        font-weight: 600;
+    }
+</style>
+<div class="container mt-5">
+
+    <div class="row">
+
+        @foreach (var emp in @MatricList)
+        {
+            <div class="col-md-10 mb-4">
+                <div class="card text-dark bg-light shadow-sm ">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between mb-5">
+                            <div>
+                                <h3 class="fw-bold ">SSC</h3>
+                            </div>
+                            <div>
+                                <button class="btn btn-primary "  @onclick="(e => FDelete(emp.SID))">Delete</button>
+
+                            </div>
+                        </div>
+                        <div class="row">
+                           @* <div class="col-md-3">
+                                <div class="card p-2">
+                                    <div class="d-flex justify-content-between">
+                                        <span>Passing</span><span class="text-primary">@emp.PassingDSGroup </span>
+                                    </div>
+                                </div>
+                            </div>*@
+                            <div class="col-md-3">
+                                <div class="card p-2">
+                                    <div class="d-flex justify-content-between">
+                                        <span>Board/University</span><span class="text-primary">@emp.Board_University</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="card p-2">
+                                    <div class="d-flex justify-content-between">
+                                        <span>ObtainedMarks  </span><span class="text-primary">@emp.ObtainedMarks</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="card p-2">
+                                    <div class="d-flex justify-content-between">
+                                        <span>TotalMarks</span><span class="text-primary">@emp.TotalMarks</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="card p-2">
+                                    <div class="d-flex justify-content-between">
+                                        <span>Percentage</span><span class="text-primary">@emp.Percentage</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-3 mt-4">
+                                <div class="card p-2">
+                                    <div class="d-flex justify-content-between">
+                                        <span>PassingYear</span><span class="text-primary">@emp.PassingYear</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-3 mt-4">
+                                <div class="card p-2">
+                                    <div class="d-flex justify-content-between">
+                                        <span>Institutes</span><span class="text-primary">@emp.Institute</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        }
+    </div>
+</div>
+
+<div class="container ">
+
+    <div class="row">
+
+        @foreach (var emp in @FscList)
+        {
+            <div class="col-md-10 mb-4">
+                <div class="card text-dark bg-light shadow-sm ">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between mb-5">
+                            <div>
+                                <h3 class="fw-bold ">HSSC</h3>
+                            </div>
+                            <div>
+                                <button class="btn btn-primary "  @onclick="(e => FDelete(emp.SID))">Delete</button>
+
+                            </div>
+                        </div>
+                        <div class="row">
+                           @* <div class="col-md-3">
+                                <div class="card p-2">
+                                    <div class="d-flex justify-content-between">
+                                        <span>Passing Groups</span><span class="text-primary">@emp.PassingDSGroup </span>
+                                    </div>
+                                </div>
+                            </div>*@
+                            <div class="col-md-3">
+                                <div class="card p-2">
+                                    <div class="d-flex justify-content-between">
+                                        <span>Board/University</span><span class="text-primary">@emp.Board_University</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="card p-2">
+                                    <div class="d-flex justify-content-between">
+                                        <span>ObtainedMarks  </span><span class="text-primary">@emp.ObtainedMarks</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="card p-2">
+                                    <div class="d-flex justify-content-between">
+                                        <span>TotalMarks</span><span class="text-primary">@emp.TotalMarks</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="card p-2">
+                                    <div class="d-flex justify-content-between">
+                                        <span>Percentage</span><span class="text-primary">@emp.Percentage</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-3 mt-4">
+                                <div class="card p-2">
+                                    <div class="d-flex justify-content-between">
+                                        <span>PassingYear</span><span class="text-primary">@emp.PassingYear</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-3 mt-4">
+                                <div class="card p-2">
+                                    <div class="d-flex justify-content-between">
+                                        <span>Institutes</span><span class="text-primary">@emp.Institute</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        }
+    </div>
+</div>
+
+
+
+
+ 
+
+@code {
+
+   
+    private EntEducationalInfo? _ModelInfo { get; set; } = new EntEducationalInfo();
+    private List<EntPassingDegree>? PassingDegreeList;
+    private List<EntPassingDSGroups>? PassingDSGroupsList;
+    private List<EntEducationalInfo>? MatricList;
+    private List<EntEducationalInfo>? FscList;
+
+    private string? DegreeId { get; set; }
+    private string? degree { get; set; }
+    public string? EditPDSG { get; set; }
+    public string? EditProvince { get; set; }
+    public string? EditBU { get; set; }
+
+    public string? value1 { get; set; }
+    [CascadingParameter]
+    private Task<AuthenticationState> authenticatestate { get; set; }
+
+    private async Task UserSession()
+    {
+        var authState = await authenticatestate;
+        value1 = $"{authState.User.Identity.Name}";
+
+    }
+
+    private void _DegreeOption(ChangeEventArgs e)
+    {
+        degree = e.Value as string;
+
+    }
+    private void LoadEducationalInfo()
+    {
+        this.PassingDegreeList = DALPassingDegree.GetPassingDegrees();
+        this.PassingDSGroupsList = DALPassingDSGroups.GetPassingDSGroups();
+        this.MatricList = DALEducationalInfo.GetMatricInfo(value1);
+        this.FscList = DALEducationalInfo.GetFscInfo(value1);
+    }
+    protected override void OnInitialized()
+    {
+        UserSession();
+        LoadEducationalInfo();
+    }
+
+    private void SubmitForm()
+    {
+
+        if (degree == "3" || degree == "4")
+        {
+
+            _ModelInfo.Board_University = EditBU;
+            _ModelInfo.PassingDSGroup = EditPDSG;
+            _ModelInfo.SID = value1;
+            DALEducationalInfo.SaveStdMatricInfo(_ModelInfo);
+            LoadEducationalInfo();
+            _ModelInfo = new EntEducationalInfo();
+        }
+        else
+        {
+            _ModelInfo.Board_University = EditBU;
+            _ModelInfo.PassingDSGroup = EditPDSG;
+
+            _ModelInfo.SID = value1;
+            DALEducationalInfo.SaveStdFscInfo(_ModelInfo);
+            LoadEducationalInfo();
+             _ModelInfo = new EntEducationalInfo();
+
+        }
+
+
+    }
+
+    private void Delete(string id)
+    {
+        DALEducationalInfo.DeleteMatric(id);
+        LoadEducationalInfo();
+    }
+
+    private void FDelete(string id)
+    {
+        DALEducationalInfo.DeleteFsc(id);
+        LoadEducationalInfo();
+    }
+
+    private void _PGSGOption(ChangeEventArgs e)
+    {
+        EditPDSG = e.Value as string;
+    }
+
+    private void _EditBU(ChangeEventArgs e)
+    {
+        EditBU = e.Value as string;
+    }
+
+
+   
+}
